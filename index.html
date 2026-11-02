@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HOURS | Solving time by managing intentions, not invitations</title>
+  <meta name="description" content="HOURS is AGI for your Google Calendar. A hypothetical startup, mocked up for ENTR 222.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="nav-mark" href="#top" aria-label="HOURS, back to top">HOURS</a>
+    <nav>
+      <a href="#day">A day</a>
+      <a href="#thesis">Thesis</a>
+      <a href="#join">Join us</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero: the calendar rises out of the dark, then comes apart -->
+    <section class="cine" id="cine">
+      <div class="cine-stage">
+        <div class="cine-floor"></div>
+        <div class="cine-word" aria-hidden="true">HOURS</div>
+        <div class="cal-wrap">
+          <div class="cal" id="cal">
+            <div class="plate plate-grid" data-label="Your calendar"></div>
+            <div class="plate plate-threads" data-label="Inbox reader"></div>
+            <div class="plate plate-memory" data-label="Memory"></div>
+            <div class="plate plate-events" data-label="Planner"></div>
+          </div>
+        </div>
+        <div class="callouts" id="callouts" aria-hidden="true"></div>
+
+        <div class="cine-copy cine-copy-a">
+          <h1>Solving time by managing intentions,<br>not invitations.</h1>
+          <dl class="stats">
+            <div><dt>6 h</dt><dd>Back per week</dd></div>
+            <div><dt>0</dt><dd>Scheduling emails</dd></div>
+            <div><dt>$20</dt><dd>$1 to join</dd></div>
+            <div><dt>2027</dt><dd>Batch 1</dd></div>
+          </dl>
+        </div>
+        <p class="cine-copy cine-copy-b">An inbox reader, a memory and a planner, all inside your normal Google Calendar.</p>
+      </div>
+    </section>
+
+    <!-- Connections: the white panel -->
+    <section class="works">
+      <h2 class="eyebrow">Works with</h2>
+      <ul>
+        <li>Google Calendar</li>
+        <li>Gmail</li>
+        <li>Google Meet</li>
+        <li>Slack</li>
+      </ul>
+    </section>
+
+    <!-- A day seen through the product -->
+    <section class="lens" id="day">
+      <div class="lens-stage">
+        <div class="lens-day" id="lensDay" aria-hidden="true"></div>
+        <div class="lens-shade"></div>
+        <div class="lens-head">
+          <h2>Through HOURS’ eyes</h2>
+          <div class="lens-tabs" id="lensTabs" aria-hidden="true"></div>
+          <p>A day on one calendar. Each time HOURS notices something, it marks it.</p>
+        </div>
+        <ol class="lens-notes" id="lensNotes"></ol>
+        <p class="lens-end" id="lensEnd">None of this shows up on a calendar.</p>
+      </div>
+    </section>
+
+    <!-- Thesis: words fill in as you scroll -->
+    <section class="fill" id="thesis">
+      <div class="fill-stage">
+        <p id="fillText">There’s an app for your meetings, your tasks and your email. There’s nothing for what your time is actually for.</p>
+      </div>
+    </section>
+
+    <!-- The product, on a phone -->
+    <section class="app" id="app">
+      <div class="app-stage">
+        <div class="app-lines">
+          <p class="app-line">It rearranges your week as your week changes.</p>
+          <p class="app-line">It only asks when the answer is really yours.</p>
+          <p class="app-line">Later, it shows you where your time went.</p>
+        </div>
+        <div class="phone-slot" aria-hidden="true">
+          <div class="phone" id="phone">
+            <div class="phone-island"></div>
+            <div class="phone-status"><span>9:41</span><span class="phone-signal"></span></div>
+
+            <div class="screen screen-today">
+              <div class="today-top">
+                <small>MONDAY, 2 NOVEMBER</small>
+                <div class="today-title"><b>Today</b><span class="pill"><i></i>Agent on</span></div>
+                <div class="chips">
+                  <div><em class="c-green">Focus</em><strong><span data-count="4.5">0</span> h</strong></div>
+                  <div><em class="c-blue">Meetings</em><strong><span data-count="2">0</span> h</strong></div>
+                  <div><em class="c-orange">Moved</em><strong><span data-count="7">0</span></strong></div>
+                </div>
+              </div>
+              <div class="timeline-clip">
+                <ul class="timeline" id="timeline">
+                  <li><time>7:00</time><i class="d-green"></i><div><b>Gym</b><span>Protected. Moved 2 calls to make room</span></div></li>
+                  <li><time>9:00</time><i class="d-blue"></i><div><b>Deep work</b><span>Board deck, due Friday</span><span class="bar-row"></span></div></li>
+                  <li><time>11:30</time><i class="d-white"></i><div><b>Sam, 1:1</b><span>Pre-read summarized and attached</span></div></li>
+                  <li><time>13:00</time><i class="d-white"></i><div><b>Lunch</b><span>Held. Nothing gets booked here</span></div></li>
+                  <li><time>14:00</time><i class="d-orange"></i><div><b>Conflict resolved</b><span>Dana took Thursday at 10 instead</span><span class="line-row"></span></div></li>
+                  <li><time>15:30</time><i class="d-white"></i><div><b>Investor call</b><span>Briefing ready, 2 min read</span></div></li>
+                  <li><time>17:00</time><i class="d-white"></i><div><b>Done for the day</b><span>Weekly sync declined for you</span></div></li>
+                  <li class="now"><time>17:01</time><i></i><div><b>Now</b></div></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="notify" id="notify">
+              <div class="notify-head"><b>HOURS</b><span>now</span></div>
+              <p>Sam wants 30 min Thursday. That breaks your only focus block. Offer Friday at 10?</p>
+              <div class="notify-actions"><span>Keep Thu</span><span class="yes">Offer Fri</span></div>
+            </div>
+
+            <div class="screen screen-patterns" id="patterns">
+              <div class="today-top"><div class="today-title"><b>Patterns</b></div>
+                <div class="ranges"><span class="on">2 weeks</span><span>Month</span><span>6 months</span></div>
+              </div>
+              <h4>Meeting load and focus</h4>
+              <div class="pat-legend">
+                <div><small>Over 14 meetings</small><b>9 h</b></div>
+                <div><small>Under 14 meetings</small><b>15 h</b></div>
+              </div>
+              <div class="pat-bars" id="patBars"></div>
+              <div class="pat-card">
+                <div class="pat-num"><span id="patNum">0</span> <small>h focus</small></div>
+                <p>In weeks with over 14 meetings, you get 6 fewer hours of focus.</p>
+                <span class="pat-btn">Cancel 3 recurring</span>
+              </div>
+            </div>
+
+            <div class="phone-tabs" id="phoneTabs">
+              <span class="on"><i class="t-clock"></i>Today</span>
+              <span><i class="t-bars"></i>Patterns</span>
+              <span><i class="t-agent"></i>Agent</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Versions: a messy week gets tidied, in line drawing -->
+    <section class="velocity" id="velocity">
+      <div class="velocity-stage">
+        <h2>Dedicated to making the world’s most useful calendar.</h2>
+        <svg id="week" viewBox="0 0 980 340" role="img" aria-label="Line drawing of a work week. As the versions advance, its overlapping meetings resolve into an orderly schedule."></svg>
+        <div class="velocity-read">
+          <div><b id="vName">v1</b> <span id="vDesc">Reads your calendar.</span></div>
+          <div class="v-hours"><b id="vHours">31</b> h in meetings</div>
+        </div>
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- Waitlist -->
+    <section class="wl" id="join">
+      <h2>Be first to hand it over.</h2>
+      <p>Only 100 seats in Batch 1. 37 left.</p>
+      <form id="wlForm">
+        <label class="sr" for="email">Email</label>
+        <input id="email" type="email" required placeholder="Email" autocomplete="off">
+        <button type="submit">JOIN · $1 <span aria-hidden="true">→</span></button>
+      </form>
+      <small id="wlNote" role="status">$1, fully refundable. It counts toward your first month.</small>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-word" aria-hidden="true">HOURS</div>
+    <p>A hypothetical company, mocked up for ENTR 222. Not a real product. All figures are illustrative, and nothing entered on this page is sent anywhere. Not affiliated with Google.</p>
+  </footer>
+
+  <div class="dock" id="dock">
+    <a class="dock-main" href="#join"><b>JOIN THE WAITLIST · $1</b><small>Refundable. 37 seats left in Batch 1.</small></a>
+    <a class="dock-alt" href="#thesis"><b>READ THE THESIS</b><small>1 min read</small></a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
