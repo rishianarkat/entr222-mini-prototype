@@ -1,3 +1,3 @@
 // OAuth client ID from Google Cloud (see README). It's safe to commit: client IDs are public.
 // While this is empty, the connect button shows a clearly labelled sample week instead.
-const GOOGLE_CLIENT_ID = '';
+const GOOGLE_CLIENT_ID = '865198900094-a3i7vo4v6s328vinreuvof324jr2a512.apps.googleusercontent.com';
