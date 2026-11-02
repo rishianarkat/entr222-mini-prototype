@@ -10,96 +10,81 @@ const progress = (el) => {
   return clamp(-r.top / (r.height - innerHeight));
 };
 
-const add = (parent, css, cls) => {
-  const i = document.createElement('i');
-  if (cls) i.className = cls;
-  Object.assign(i.style, css);
-  parent.append(i);
-  return i;
-};
-const pct = (n) => `${n}%`;
-
-/* ---------- Hero calendar ---------- */
-const plates = [...document.querySelectorAll('.plate')];
-const callouts = plates.map((p) => {
-  const el = document.createElement('div');
-  el.className = 'callout';
-  el.textContent = p.dataset.label;
-  $('#callouts').append(el);
-  return el;
+/* ---------- Hero product window ---------- */
+const mockDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const WEEK_START = 8, WEEK_HOURS = 14, WEEK_TOP = 32, HOUR_PX = 33;
+// [day, start hour, length, title, class]
+const mockEvents = [
+  [0, 8.5, 1.5, 'Bio lecture'], [2, 8.5, 1.5, 'Bio lecture'], [4, 10, 1.5, 'Bio exam', 'due'],
+  [1, 10, 1.5, 'CS lab'], [3, 10, 1.5, 'CS lab'], [1, 14, 1, 'Office hours'], [0, 13, 1, 'Calc'],
+  [2, 13, 1, 'Calc'], [4, 14, 1, 'Calc'], [3, 19, 1, 'Robotics Club'], [5, 11, 2, 'Shift'],
+  [2, 16, 1.5, 'Study: Bio', 'study'], [3, 20.5, 1.5, 'Study: Bio', 'study'],
+];
+const mockWeek = $('#mockWeek');
+for (let h = 0; h < WEEK_HOURS; h++) {
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.style.top = `${WEEK_TOP + h * HOUR_PX}px`;
+  mockWeek.append(row);
+}
+mockDays.forEach((name, i) => {
+  const day = document.createElement('div');
+  day.className = 'day';
+  day.style.cssText = `left:${(i / 7) * 100}%;width:${100 / 7}%`;
+  day.innerHTML = `<span>${name}</span>`;
+  mockWeek.append(day);
 });
-
-for (let i = 0; i < 35; i++) add($('.plate-grid'), {});
-[[8, 6, 60], [22, 30, 54], [38, 12, 74], [55, 44, 40], [71, 18, 70], [88, 34, 50]].forEach(([top, left, width]) =>
-  add($('.plate-threads'), { top: pct(top), left: pct(left), width: pct(width) }));
-[[12, 18], [24, 66], [33, 40], [46, 84], [58, 25], [64, 58], [78, 12], [84, 72], [18, 90], [50, 48]].forEach(([top, left]) =>
-  add($('.plate-memory'), { top: pct(top), left: pct(left) }));
-// Blocks sit on the grid: column / 7 and row / 5
-[[0, 0, 2, 0], [2, 1, 1, 0], [4, 0, 2, 0], [1, 2, 1, 1], [3, 2, 2, 0], [0, 3, 1, 0], [5, 3, 1, 1], [2, 4, 3, 0]].forEach(([col, row, span, hot]) =>
-  add($('.plate-events'), {
-    left: pct((col / 7) * 100 + 0.8),
-    top: pct((row / 5) * 100 + 4),
-    width: pct((span / 7) * 100 - 1.6),
-    height: pct(12),
-  }, hot ? 'hot' : ''));
+mockEvents.forEach(([d, start, len, title, cls]) => {
+  const ev = document.createElement('div');
+  ev.className = `ev${cls ? ` ${cls}` : ''}`;
+  ev.style.cssText = `left:calc(${(d / 7) * 100}% + 3px);width:calc(${100 / 7}% - 6px);top:${WEEK_TOP + (start - WEEK_START) * HOUR_PX}px;height:${len * HOUR_PX - 2}px`;
+  ev.textContent = title;
+  mockWeek.append(ev);
+});
 
 function updateHero() {
   const p = progress($('#cine'));
   const stage = $('.cine-stage').style;
   const rise = ease(range(p, 0, 0.38));
-  const explode = ease(range(p, 0.62, 0.86));
+  const face = ease(range(p, 0.58, 0.74));
 
-  stage.setProperty('--floor', lerp(0.15, 1, rise));
-  stage.setProperty('--word', range(p, 0.12, 0.34) * (1 - range(p, 0.56, 0.66)));
+  stage.setProperty('--floor', lerp(0.15, 1, rise) * lerp(1, 0.5, face));
+  stage.setProperty('--word', range(p, 0.12, 0.34) * (1 - range(p, 0.52, 0.6)));
   stage.setProperty('--word-y', `${lerp(30, 0, rise)}px`);
-  stage.setProperty('--copy-a', range(p, 0.3, 0.42) * (1 - range(p, 0.56, 0.64)));
-  stage.setProperty('--copy-b', range(p, 0.76, 0.86));
-  stage.setProperty('--explode', range(p, 0.72, 0.86));
+  stage.setProperty('--copy-a', range(p, 0.3, 0.42) * (1 - range(p, 0.52, 0.58)));
+  stage.setProperty('--copy-b', range(p, 0.72, 0.8));
+  stage.setProperty('--step-a', range(p, 0.72, 0.77));
+  stage.setProperty('--step-b', range(p, 0.8, 0.84));
+  stage.setProperty('--step-c', range(p, 0.87, 0.92));
 
-  const rx = lerp(84, 62, rise) + lerp(0, -4, explode);
-  const rz = lerp(-14, 0, rise) + lerp(0, -30, explode);
-  const cal = $('#cal');
-  cal.style.transform = `translateY(${lerp(0, 2, rise) + lerp(0, 16, explode)}%) translateX(${lerp(0, innerWidth > 760 ? 10 : 0, explode)}vw) rotateX(${rx}deg) rotateZ(${rz}deg) scale(${lerp(0.92, 1, rise)})`;
-
-  // Bigger gaps between plates once it comes apart; they rest almost flush before that
-  const gap = Math.min(innerHeight * 0.1, 90);
-  plates.forEach((plate, i) => {
-    plate.style.transform = `translateZ(${(i * (2 + explode * gap)).toFixed(1)}px)`;
-    plate.style.filter = i === 0 ? `brightness(${lerp(0.35, 1, rise)})` : '';
-    if (i) plate.style.opacity = i === 3 ? lerp(0.25, 1, rise) : explode * 0.95;
-  });
-
-  // Hang each label off the right corner of its plate
-  if (explode > 0.01) {
-    plates.forEach((plate, i) => {
-      const r = plate.getBoundingClientRect();
-      const w = callouts[i].offsetWidth;
-      const x = Math.min(r.right - r.width * 0.06, innerWidth - w - 12);
-      callouts[i].style.transform = `translate(${x}px, ${r.top + r.height * 0.42}px)`;
-    });
-  }
+  // Tilted and small behind the headline, then flat and full size
+  const fit = Math.min((innerWidth * 0.92) / 860, (innerHeight * 0.64) / 540);
+  const scale = fit * lerp(lerp(0.5, 0.62, rise), 1, face);
+  const rx = lerp(lerp(84, 58, rise), 0, face);
+  const y = lerp(innerHeight * 0.05, -innerHeight * 0.06, face);
+  const mock = $('#mock');
+  mock.style.transform = `translateY(${y.toFixed(1)}px) perspective(1300px) rotateX(${rx.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+  mock.style.filter = `brightness(${lerp(0.3, 1, rise).toFixed(2)})`;
 }
 
 /* ---------- Lens: a day in a calendar ---------- */
 const FIRST_HOUR = 6;
 const dayEvents = [
-  { at: 7, len: 1, x: 42, w: 42, name: 'Gym', sub: 'Recurring, 3 weeks unattended', mark: 0 },
-  { at: 8.5, len: 0.5, x: 42, w: 42, name: 'Inbox', dim: 1 },
-  { at: 9.5, len: 1, x: 42, w: 42, name: 'Weekly sync', sub: '9 people', mark: 1 },
-  { at: 11, len: 1, x: 42, w: 42, name: 'Hiring review', dim: 1 },
-  { at: 13, len: 1, x: 42, w: 42, name: 'Lunch?', sub: 'Nothing held', ghost: 1, mark: 2 },
-  { at: 14, len: 1, x: 42, w: 21, name: 'Dana, intro', sub: '2:00', mark: 3 },
-  { at: 14, len: 1, x: 63.5, w: 21, name: 'Sam, 1:1', sub: '2:00', mark: 3 },
-  { at: 15.5, len: 1.5, x: 42, w: 42, name: 'Investor call', dim: 1 },
-  { at: 18, len: 1, x: 42, w: 42, name: 'Team dinner', dim: 1 },
-  { at: 21.5, len: 1, x: 42, w: 42, name: 'Red-eye to Boston', sub: 'Lands 06:10. First call 07:30', mark: 4 },
+  { at: 8.5, len: 1.5, x: 42, w: 42, name: 'Bio lecture', sub: 'Exam Friday, 10:00', mark: 0 },
+  { at: 10.5, len: 1.5, x: 42, w: 42, name: 'CS lab', sub: 'Problem set due tonight', mark: 1 },
+  { at: 13, len: 1, x: 42, w: 42, name: 'Free', sub: 'Nothing planned', ghost: 1, mark: 2 },
+  { at: 14, len: 1, x: 42, w: 21, name: 'Office hours', sub: '14:00', mark: 3 },
+  { at: 14, len: 1, x: 63.5, w: 21, name: 'Group project', sub: '14:00', mark: 3 },
+  { at: 16, len: 1.5, x: 42, w: 42, name: 'Calc', dim: 1 },
+  { at: 19, len: 1, x: 42, w: 42, name: 'Robotics Club', dim: 1 },
+  { at: 21.5, len: 1, x: 42, w: 42, name: 'Problem set', sub: 'Due 23:59', mark: 4 },
 ];
 const beats = [
-  { time: '07:05', hour: 7.5, text: 'Gym’s still on here. You haven’t gone in three weeks.' },
-  { time: '09:40', hour: 10, text: 'Rescheduled four times. Nobody would notice if it went.' },
-  { time: '13:10', hour: 13.5, text: 'No lunch since Monday.' },
-  { time: '14:00', hour: 14.5, text: 'Two people think they have you at 2.' },
-  { time: '21:40', hour: 22, text: 'Red-eye tonight. Your first call is still at 7:30.' },
+  { time: '08:40', hour: 9.5, text: 'Bio exam on Friday. No study time on your calendar.' },
+  { time: '10:30', hour: 11.5, text: 'Problem set’s due tonight. Nothing’s blocked for it.' },
+  { time: '13:10', hour: 13.5, text: 'One free hour. Want to use it for bio?' },
+  { time: '13:50', hour: 14.5, text: 'Office hours and group project, both at 14:00.' },
+  { time: '21:30', hour: 22, text: 'Two and a half hours until that problem set is due.' },
 ];
 
 const lensDay = $('#lensDay');
@@ -159,49 +144,30 @@ function updateFill() {
 }
 
 /* ---------- App ---------- */
-const barHeights = [62, 40, 72, 38, 66, 36, 76, 70, 42, 64, 34, 74, 38, 78];
-barHeights.forEach((h) => add($('#patBars'), { '--h': `${h}%` }, h < 50 ? 'low' : ''));
-[...$('#patBars').children].forEach((bar, i) => bar.style.setProperty('--h', `${barHeights[i]}%`));
-const countEls = [...document.querySelectorAll('[data-count]')];
-
 function updateApp() {
   const p = progress($('#app'));
-  const step = p < 0.42 ? 0 : p < 0.66 ? 1 : 2;
+  const step = p < 0.36 ? 0 : p < 0.68 ? 1 : 2;
   document.querySelectorAll('.app-line').forEach((l, i) => l.classList.toggle('on', i === step));
-
-  const tl = $('#timeline');
-  const overflow = Math.max(0, tl.scrollHeight - tl.parentElement.clientHeight + 20);
-  tl.style.setProperty('--tl', `${(-overflow * ease(range(p, 0.04, 0.4))).toFixed(1)}px`);
-
-  countEls.forEach((el) => {
-    const target = Number(el.dataset.count);
-    const v = target * ease(range(p, 0, 0.3));
-    el.textContent = Number.isInteger(target) ? Math.round(v) : v.toFixed(1);
-  });
-
-  $('#notify').classList.toggle('on', step === 1);
-  $('#patterns').classList.toggle('on', step === 2);
-  [...$('#phoneTabs').children].forEach((t, i) => t.classList.toggle('on', i === (step === 2 ? 1 : 0)));
-  $('#patNum').textContent = `−${Math.round(6 * ease(range(p, 0.7, 0.86)))}`;
+  document.querySelectorAll('.pane').forEach((l, i) => l.classList.toggle('on', i === step));
 }
 
-function sizePhone() {
+function sizePanel() {
   const mobile = innerWidth <= 760;
-  const room = mobile ? (innerHeight - 72 - innerHeight * 0.25) / 660 : (innerHeight - 84) / 660;
-  const s = Math.min(mobile ? 0.9 : 1.05, room);
-  $('#phone').style.setProperty('--s', s.toFixed(3));
+  const room = mobile ? (innerHeight - 72 - innerHeight * 0.25 - 80) / 620 : (innerHeight - 170) / 620;
+  $('#panel').style.setProperty('--s', Math.min(1.05, room).toFixed(3));
 }
 
-/* ---------- Versions: a messy week tidies itself ---------- */
+/* ---------- Roadmap: a messy week tidies itself ---------- */
+// Features from the user story map
 const versions = [
-  ['v1', 'Reads your calendar.', 31],
-  ['v2', 'Flags what looks wrong.', 29],
-  ['v3', 'Suggests a better week.', 26],
-  ['v4', 'Drafts the emails for you.', 23],
-  ['v5', 'Books and moves meetings.', 20],
-  ['v6', 'Negotiates with other people’s calendars.', 17],
-  ['v7', 'Protects what you said mattered.', 14],
-  ['v8', 'Decides. You check in on Fridays.', 12],
+  ['Release 1', 'Shows your upcoming events.', 5],
+  ['Release 1', 'Detects scheduling conflicts.', 5],
+  ['Release 1', 'Creates, edits and deletes events from chat.', 3],
+  ['Release 1', 'Sets reminders.', 3],
+  ['Release 2', 'Suggests free time.', 2],
+  ['Release 2', 'Handles multi-step requests.', 1],
+  ['Release 2', 'Reschedules events in bulk.', 0],
+  ['Release 2', 'Reminds you before you ask.', 0],
 ];
 const W = 980, H = 340, COLS = 5, COLW = W / COLS;
 const week = $('#week');
@@ -214,7 +180,7 @@ const svgEl = (tag, attrs) => {
 svgEl('rect', { class: 'frame', x: 0.5, y: 0.5, width: W - 1, height: H - 1, rx: 8 });
 for (let c = 1; c < COLS; c++) svgEl('line', { x1: c * COLW, x2: c * COLW, y1: 0, y2: H });
 
-// Start: [col, y, h, xOffset, widthShare] piled up and overlapping. End: [col, y, h], one tidy afternoon a day.
+// Start: [col, y, h, xOffset, widthShare] piled up and overlapping. End: [col, y, h], or null if it goes.
 const blocks = [
   [[0, 20, 70, 0, 1], [0, 200, 60]], [[0, 50, 80, 0.3, 0.7], [0, 262, 60]], [[0, 180, 90, 0.1, 0.8], null],
   [[1, 30, 60, 0, 0.6], [1, 200, 60]], [[1, 60, 90, 0.4, 0.6], [1, 262, 60]], [[1, 210, 70, 0, 1], null],
@@ -222,10 +188,10 @@ const blocks = [
   [[3, 40, 80, 0, 1], [3, 200, 60]], [[3, 90, 90, 0.35, 0.65], [3, 262, 60]], [[3, 250, 70, 0, 0.7], null],
   [[4, 20, 60, 0.2, 0.8], [4, 200, 122]], [[4, 70, 80, 0, 0.6], null], [[4, 120, 90, 0.4, 0.6], null], [[4, 240, 60, 0, 1], null],
 ];
-// The freed mornings: one long focus block appears per day
+// The freed mornings: one long study block appears per day
 const focus = [0, 1, 2, 3, 4].flatMap((c) => {
   const label = svgEl('text', { x: c * COLW + 24, y: 40 });
-  label.textContent = 'Focus';
+  label.textContent = 'Study';
   return [svgEl('rect', { x: c * COLW + 10, y: 16, width: COLW - 20, height: 170, rx: 6 }), label];
 });
 const blockEls = blocks.map(() => svgEl('rect', { rx: 5 }));
@@ -235,10 +201,10 @@ function updateVelocity() {
   const p = progress($('#velocity'));
   const v = Math.min(versions.length - 1, Math.floor(p * versions.length));
   const t = ease(range(p, 0.04, 0.96));
-  const [name, desc, hours] = versions[v];
+  const [name, desc, conflicts] = versions[v];
   $('#vName').textContent = name;
   $('#vDesc').textContent = desc;
-  $('#vHours').textContent = hours;
+  $('#vCount').textContent = conflicts;
   [...$('#ticks').children].forEach((c, i) => c.classList.toggle('on', i <= v));
 
   blocks.forEach(([[col, y, h, off, share], end], i) => {
@@ -258,18 +224,160 @@ function updateVelocity() {
   focus.forEach((f) => f.setAttribute('opacity', range(t, 0.65, 1).toFixed(2)));
 }
 
-/* ---------- Dock and waitlist ---------- */
-function updateDock() {
-  const r = $('#join').getBoundingClientRect();
-  $('#dock').classList.toggle('off', r.top < innerHeight * 0.75);
+/* ---------- Connect Google Calendar ---------- */
+const SCOPE = 'https://www.googleapis.com/auth/calendar.events.readonly';
+const EVENTS_URL = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
+const DAY_MS = 86400000;
+const connectNote = $('#connectNote');
+const defaultNote = connectNote.textContent;
+const connectButtons = document.querySelectorAll('[data-connect]');
+let accessToken = null;
+
+const setBusy = (busy) => connectButtons.forEach((b) => { b.disabled = busy; });
+
+async function fetchWeek(token) {
+  const now = new Date();
+  const params = new URLSearchParams({
+    timeMin: now.toISOString(),
+    timeMax: new Date(now.getTime() + 7 * DAY_MS).toISOString(),
+    singleEvents: 'true',
+    orderBy: 'startTime',
+    maxResults: '50',
+  });
+  const res = await fetch(`${EVENTS_URL}?${params}`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(`Calendar request failed (${res.status})`);
+  const { items = [] } = await res.json();
+  return items
+    .filter((e) => e.status !== 'cancelled')
+    .filter((e) => !e.attendees?.some((a) => a.self && a.responseStatus === 'declined'))
+    .map((e) => ({
+      title: e.summary || '(No title)',
+      allDay: !e.start.dateTime,
+      start: new Date(e.start.dateTime || `${e.start.date}T00:00:00`),
+      end: new Date(e.end.dateTime || `${e.end.date}T00:00:00`),
+      free: e.transparency === 'transparent',
+    }));
 }
 
-// A mock: nothing leaves the page
-$('#wlForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  e.target.reset();
-  $('#wlNote').textContent = 'You’re on the list. (Not really: this is a class mock-up, and nothing was sent.)';
+// Only timed events marked busy can clash; all-day ones are usually just labels
+function markClashes(events) {
+  const busy = events.filter((e) => !e.allDay && !e.free);
+  busy.forEach((a) => {
+    a.clashWith = busy.find((b) => b !== a && a.start < b.end && b.start < a.end)?.title;
+  });
+  return busy.filter((e) => e.clashWith).length / 2;
+}
+
+function renderWeek(events, sample) {
+  const clashes = Math.ceil(markClashes(events));
+  const count = `${events.length} event${events.length === 1 ? '' : 's'}`;
+  const clashText = clashes ? `${clashes} clash${clashes === 1 ? '' : 'es'} to sort out` : 'no clashes';
+  $('#resultSum').textContent = `${sample ? 'Sample week: ' : ''}${count} in the next 7 days, ${clashText}.`;
+
+  const days = $('#resultDays');
+  days.replaceChildren();
+  let lastDay = '';
+  events.forEach((e) => {
+    const dayName = e.start.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    if (dayName !== lastDay) {
+      const h = document.createElement('h3');
+      h.textContent = dayName;
+      days.append(h);
+      lastDay = dayName;
+    }
+    const row = document.createElement('div');
+    row.className = `result-ev${e.clashWith ? ' clash' : ''}`;
+    const time = document.createElement('time');
+    time.textContent = e.allDay ? 'All day' : e.start.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    const body = document.createElement('div');
+    body.textContent = e.title;
+    if (e.clashWith) {
+      const why = document.createElement('em');
+      why.textContent = `Clashes with ${e.clashWith}`;
+      body.append(why);
+    }
+    row.append(time, body);
+    days.append(row);
+  });
+  $('#result').hidden = false;
+  $('#disconnect').hidden = sample;
+  $('#connect').scrollIntoView({ block: 'start' });
+}
+
+// Shown only until a client ID is set in config.js, and labelled as sample data
+function sampleWeek() {
+  const at = (dayOffset, hour, minute = 0) => {
+    const d = new Date();
+    d.setDate(d.getDate() + dayOffset);
+    d.setHours(hour, minute, 0, 0);
+    return d;
+  };
+  const ev = (title, day, h, len) => ({ title, allDay: false, start: at(day, h), end: new Date(at(day, h).getTime() + len * 3600000) });
+  return [
+    ev('Bio lecture', 1, 8, 1.5), ev('Office hours', 2, 14, 1), ev('Group project', 2, 14, 1),
+    ev('Calc', 3, 13, 1), ev('Robotics Club', 4, 19, 1), ev('Bio exam', 5, 10, 1.5),
+  ];
+}
+
+async function connected(token) {
+  accessToken = token;
+  connectNote.textContent = 'Loading your week…';
+  try {
+    renderWeek(await fetchWeek(token), false);
+    connectNote.textContent = 'Connected. Your events stay in this tab and are gone when you close it.';
+  } catch (err) {
+    console.error(err);
+    connectNote.textContent = 'Connected, but your calendar wouldn’t load. Please try again.';
+  } finally {
+    setBusy(false);
+  }
+}
+
+function connect() {
+  if (!GOOGLE_CLIENT_ID) {
+    renderWeek(sampleWeek(), true);
+    connectNote.textContent = 'Google sign-in isn’t set up on this copy yet, so this is sample data.';
+    return;
+  }
+  if (!window.google?.accounts?.oauth2) {
+    connectNote.textContent = 'Couldn’t reach Google sign-in. Check for an ad blocker and try again.';
+    return;
+  }
+  setBusy(true);
+  connectNote.textContent = 'Waiting for Google…';
+  google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: SCOPE,
+    callback: (res) => {
+      if (res.error || !res.access_token) {
+        connectNote.textContent = 'Google didn’t grant access, so nothing was connected.';
+        setBusy(false);
+        return;
+      }
+      connected(res.access_token);
+    },
+    error_callback: () => {
+      connectNote.textContent = 'Sign-in was closed before it finished. Nothing was connected.';
+      setBusy(false);
+    },
+  }).requestAccessToken();
+}
+
+connectButtons.forEach((b) => b.addEventListener('click', connect));
+
+$('#disconnect').addEventListener('click', () => {
+  if (accessToken) google.accounts.oauth2.revoke(accessToken);
+  accessToken = null;
+  $('#result').hidden = true;
+  $('#resultDays').replaceChildren();
+  connectNote.textContent = defaultNote;
 });
+
+/* ---------- Dock ---------- */
+function updateDock() {
+  const r = $('#connect').getBoundingClientRect();
+  $('#dock').classList.toggle('off', r.top < innerHeight * 0.75);
+}
 
 /* ---------- Loop ---------- */
 let queued = false;
@@ -288,6 +396,6 @@ function queue() {
   requestAnimationFrame(render);
 }
 addEventListener('scroll', queue, { passive: true });
-addEventListener('resize', () => { sizePhone(); queue(); });
-sizePhone();
+addEventListener('resize', () => { sizePanel(); queue(); });
+sizePanel();
 render();
