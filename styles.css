@@ -334,6 +334,7 @@ button:disabled { opacity: 0.6; cursor: progress; }
 }
 .footer-word { font-stretch: 125%; font-weight: 300; font-size: clamp(52px, 15vw, 240px); letter-spacing: 0.14em; text-indent: 0.14em; line-height: 1.15; opacity: 0.9; }
 .footer p { max-width: 42em; margin: 14px auto 0; font-size: 13px; line-height: 1.45; opacity: 0.55; }
+.footer a { text-decoration: underline; }
 
 /* ---------- Dock ---------- */
 .dock {
